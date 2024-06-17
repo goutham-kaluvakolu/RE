@@ -1,0 +1,14 @@
+/* src/index.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+.full-screen-input {
+  width: 75vw; /* Full width of the viewport */
+  padding: 0.5rem; /* 16px padding */
+  /* font-size: 1.125rem; 18px font size */
+  box-sizing: border-box; /* Include padding and border in the element's total width and height */
+  border-radius: 5px;
+  /* margin: rem 0; */
+}
