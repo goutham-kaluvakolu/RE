@@ -216,7 +216,6 @@ app.post('/api/generate-description', async (req, res) => {
     console.log(prompt);
 
     try {
-        const OPENAI_API_KEY = "yourkey"; // Replace with your actual API key
 
         const response = await axios.post(
             'https://api.openai.com/v1/chat/completions',
