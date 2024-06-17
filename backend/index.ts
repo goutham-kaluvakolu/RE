@@ -6,6 +6,11 @@ const axios = require('axios');
 const { exec } = require('child_process');
 const fs = require('fs');
 const path = require('path');
+require('dotenv').config();
+
+// const { OPENAI_API_KEY } = process.env;
+const OPENAI_API_KEY = process.env.API_KEY;
+
 
 const { Configuration, OpenAIApi } = require("openai");
 
