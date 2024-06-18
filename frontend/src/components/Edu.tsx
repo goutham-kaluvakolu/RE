@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react';
-import { useRecoilState } from 'recoil';
+import { useEffect } from 'react';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 import { educationState , educationLatexState} from '../atom.ts';
 import { eduArray } from '../config';
 
 
 const Edu = () => {
-    const [eduAtom, setEduAtom] = useRecoilState(educationLatexState);
+    const setEduAtom = useSetRecoilState(educationLatexState);
     const [education, setEducation] = useRecoilState(educationState);
     useEffect(() => {
         const newEducation = eduArray.map((edu, index) => ({
@@ -18,9 +18,15 @@ const Edu = () => {
               }));
               console.log(newEducation);
               setEducation(newEducation)
-        handleSubmit();
-          
+              console.log("useeffect");
             }, []);
+
+    useEffect(() => {
+                if (education.length > 0) {
+                  console.log("useEffect - Education state updated");
+                  handleSubmit();
+                }
+    }, [education]);
     
 
     const handleSelect = (id: number) => {
@@ -40,6 +46,7 @@ const Edu = () => {
         \\section{Education}
         \\resumeSubHeadingListStart`
         const selectedEducation = education.filter(item => item.selected);
+        console.log("filter",education,selectedEducation);
         selectedEducation.forEach(item => {
             finalLatex += `\n    \\resumeSubheading
               {${item.uni}}{${item.city}}{${item.degree}}{${item.year}}`
@@ -47,7 +54,6 @@ const Edu = () => {
         finalLatex += `\n  \\resumeSubHeadingListEnd`
         console.log(finalLatex);
         setEduAtom(finalLatex);
-        
     };
 
     return (

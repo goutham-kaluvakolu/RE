@@ -1,10 +1,10 @@
-import  { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { expArray } from '../config';
-import { useRecoilState } from 'recoil';
-import { experienceState,experienceLatexState } from '../atom';
+import { useRecoilState, useSetRecoilState } from 'recoil';
+import { experienceState, experienceLatexState } from '../atom';
 
-const Exp = () => { 
-    const [experienceAtom, setExperienceAtom] = useRecoilState(experienceLatexState);
+const Exp = () => {
+    const setExperienceAtom = useSetRecoilState(experienceLatexState);
     const [experience, setExperience] = useRecoilState(experienceState);
 
     const handleSubmit = () => {
@@ -18,7 +18,7 @@ const Exp = () => {
               {${item.role}}{${item.years}}{${item.company}}{${item.loc}}
               \n    \\resumeItemListStart
               `;
-             
+
             item.points.filter(point => point.selected).forEach(point => {
                 finalLatex += `\n      \\resumeItem {${point.text}}`;
             });
@@ -29,41 +29,45 @@ const Exp = () => {
         console.log(finalLatex);
         setExperienceAtom(finalLatex);
     };
-    
-       useEffect(() => {
-          const newExperience = expArray.map((exp, index) => ({
-                    id: index + 1,
-                   role: exp.role,
-                   company: exp.company,
-                    years: exp.years,
-                    loc: exp.loc,
-                    points: exp.points.map((text, idx) => ({ id: idx + 1, text, selected: true })),
-                   selected: true
-                }));
-                console.log(newExperience);
-                setExperience(newExperience)
-        handleSubmit();
-        
-            }, []);
 
-        
+    useEffect(() => {
+        const newExperience = expArray.map((exp, index) => ({
+            id: index + 1,
+            role: exp.role,
+            company: exp.company,
+            years: exp.years,
+            loc: exp.loc,
+            points: exp.points.map((text, idx) => ({ id: idx + 1, text, selected: true })),
+            selected: true
+        }));
+        console.log(newExperience);
+        setExperience(newExperience)
+    }, []);
 
-    
-        
 
-    const handleSelect = (id) => {
+    useEffect(() => {
+        if (experience.length > 0) {
+            console.log("useEffect - Education state updated");
+            handleSubmit();
+        }
+    }, [experience]);
+
+
+
+
+    const handleSelect = (id: number) => {
         setExperience(experience.map(item =>
             item.id === id ? { ...item, selected: !item.selected } : item
         ));
     };
 
-    const handleChange = (id, key, value) => {
+    const handleChange = (id: number, key: string, value: string) => {
         setExperience(experience.map(item =>
             item.id === id ? { ...item, [key]: value } : item
         ));
     };
 
-    const handlePointChange = (expId, pointId, value) => {
+    const handlePointChange = (expId: number, pointId: number) => {
         setExperience(experience.map(item =>
             item.id === expId ? {
                 ...item,
@@ -73,12 +77,12 @@ const Exp = () => {
             } : item
         ));
     };
-    const handlePointInputChange = (expId, pointId, value) => {
+    const handlePointInputChange = (expId: number, pointId: number, value: string) => {
         setExperience(experience.map(item =>
             item.id === expId ? {
                 ...item,
                 points: item.points.map(point =>
-                    point.id === pointId ? { ...point, text:value } : point
+                    point.id === pointId ? { ...point, text: value } : point
                 )
             } : item
         ));
@@ -94,54 +98,54 @@ const Exp = () => {
                 experience.map((item, index) => (
                     <div key={index} className='flex justify-between border-b-2 p-4 bg-slate-300 m-2 rounded-lg'>
                         <div className='m-4'>
-                        <input
-                            type="checkbox"
-                            checked={item.selected}
-                            onChange={() => handleSelect(item.id)}
-                        />
-                        </div>
-                    <div>
-                        <div>
-                        <input
-                            className='full-screen-input'
-                            value={item.role}
-                            onChange={(e) => handleChange(item.id, 'role', e.target.value)}
-                        />
-                        <input
-                            className='full-screen-input'
-                            value={item.years}
-                            onChange={(e) => handleChange(item.id, 'year', e.target.value)}
-                        />
-                        <input
-                            className='full-screen-input'
-                            value={item.company}
-                            onChange={(e) => handleChange(item.id, 'company', e.target.value)}
-                        />
-                        <input
-                            className='full-screen-input'
-                            value={item.loc}
-                            onChange={(e) => handleChange(item.id, 'loc', e.target.value)}
-                        />
+                            <input
+                                type="checkbox"
+                                checked={item.selected}
+                                onChange={() => handleSelect(item.id)}
+                            />
                         </div>
                         <div>
-                        {item.points.map(point => (
-                            <div key={point.id} className='m-8'>
+                            <div>
                                 <input
-                                    type="checkbox"
-                                    checked={point.selected}
-                                    onChange={() => handlePointChange(item.id, point.id, point.selected)}
+                                    className='full-screen-input'
+                                    value={item.role}
+                                    onChange={(e) => handleChange(item.id, 'role', e.target.value)}
                                 />
                                 <input
-                            className='full-screen-input '
-                                    value={point.text}
-                                    onChange={(e) => handlePointInputChange(item.id, point.id, e.target.value)}
+                                    className='full-screen-input'
+                                    value={item.years}
+                                    onChange={(e) => handleChange(item.id, 'year', e.target.value)}
+                                />
+                                <input
+                                    className='full-screen-input'
+                                    value={item.company}
+                                    onChange={(e) => handleChange(item.id, 'company', e.target.value)}
+                                />
+                                <input
+                                    className='full-screen-input'
+                                    value={item.loc}
+                                    onChange={(e) => handleChange(item.id, 'loc', e.target.value)}
                                 />
                             </div>
-                        ))}
+                            <div>
+                                {item.points.map(point => (
+                                    <div key={point.id} className='m-8'>
+                                        <input
+                                            type="checkbox"
+                                            checked={point.selected}
+                                            onChange={() => handlePointChange(item.id, point.id)}
+                                        />
+                                        <input
+                                            className='full-screen-input '
+                                            value={point.text}
+                                            onChange={(e) => handlePointInputChange(item.id, point.id, e.target.value)}
+                                        />
+                                    </div>
+                                ))}
+                            </div>
                         </div>
-                    </div>
-                        
-                        
+
+
                     </div>
                 ))
             }

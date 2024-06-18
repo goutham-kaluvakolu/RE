@@ -1,63 +1,14 @@
 // src/Projects.jsx
-import React, { useEffect, useState } from 'react';
+import  { useEffect } from 'react';
 import { projectsArray } from '../config';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 import { projectsState, projectsLatexState } from '../atom';
 
 const Projects = () => {
-    const [projectsLatex, setProjectsAtom] = useRecoilState(projectsLatexState);
+    const setProjectsAtom = useSetRecoilState(projectsLatexState);
     const [projects, setProjects] = useRecoilState(projectsState);
-    useEffect(() => {
-        const newProjects = projectsArray.map((proj, index) => ({
-            id: index + 1,
-            name: proj.name,
-            tech: proj.tech.join(', '),
-            years: proj.years,
-            points: proj.points.map((text, idx) => ({ id: idx + 1, text, selected: true })),
-            selected: true
-        }))
 
-        console.log(newProjects);
-        setProjects(newProjects)
-        handleSubmit();
-
-    }, []);
-
-
-    const handleSelect = (id) => {
-        setProjects(projects.map(proj =>
-            proj.id === id ? { ...proj, selected: !proj.selected } : proj
-        ));
-    };
-
-    const handleChange = (id, key, value) => {
-        setProjects(projects.map(proj =>
-            proj.id === id ? { ...proj, [key]: value } : proj
-        ));
-    };
-
-    const handlePointChange = (projId, pointId, value) => {
-        setProjects(projects.map(proj =>
-            proj.id === projId ? {
-                ...proj,
-                points: proj.points.map(point =>
-                    point.id === pointId ? { ...point, text: value } : point
-                )
-            } : proj
-        ));
-    };
-
-    const handlePointSelect = (projId, pointId) => {
-        setProjects(projects.map(proj =>
-            proj.id === projId ? {
-                ...proj,
-                points: proj.points.map(point =>
-                    point.id === pointId ? { ...point, selected: !point.selected } : point
-                )
-            } : proj
-        ));
-    };
-
+    
     const handleSubmit = () => {
         let finalLatex = `%-----------PROJECTS-----------
         \\section{Projects}
@@ -75,6 +26,69 @@ const Projects = () => {
         finalLatex += `\n  \\resumeSubHeadingListEnd`;
         console.log(finalLatex);
         setProjectsAtom(finalLatex);
+    };
+    // @tsignore
+
+    useEffect(() => {
+        // @ts-ignore: Ignore type error for the example array
+        const newProjects = projectsArray.map((proj, index) => ({
+            id: index + 1,
+            // @ts-ignore: Ignore type error for the example array
+            name: proj.name,
+            // @ts-ignore: Ignore type error for the example array
+            tech: proj.tech.join(', '),
+            // @ts-ignore: Ignore type error for the example array
+            years: proj.years,
+            // @ts-ignore: Ignore type error for the example array
+            points: proj.points.map((text, idx) => ({ id: idx + 1, text, selected: true })),
+            selected: true
+        }));
+
+        setProjects(newProjects);
+
+    }, []);
+    
+    useEffect(() => {
+        if (projects.length > 0) {
+          console.log("useEffect - Education state updated");
+          handleSubmit();
+        }
+}, [projects]);
+
+
+
+    const handleSelect = (id: number) => {
+        setProjects(projects.map(proj =>
+            proj.id === id ? { ...proj, selected: !proj.selected } : proj
+        ));
+    };
+
+    const handleChange = (id: number, key: string, value: string) => {
+        setProjects(projects.map(proj =>
+            proj.id === id ? { ...proj, [key]: value } : proj
+        ));
+    };
+
+    const handlePointChange = (projId: number, pointId: number, value: string) => {
+        setProjects(projects.map(proj =>
+            proj.id === projId ? {
+                ...proj,
+                points: proj.points.map(point =>
+                    point.id === pointId ? { ...point, text: value } : point
+                )
+            } : proj
+        ));
+    };
+
+    const handlePointSelect = (projId: number, pointId: number) => {
+        setProjects(projects.map(proj =>
+            proj.id === projId ? {
+                ...proj,
+                points: proj.points.map(point =>
+                    point.id === pointId ? { ...point, selected: !point.selected } : point
+                )
+            } : proj
+        ));
     };
 
     return (

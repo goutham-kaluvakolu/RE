@@ -1,25 +1,25 @@
-import  { useState } from 'react';
+import  { SetStateAction, useState } from 'react';
 import axios from 'axios';
 import { backendUrl, backendUrlGenKey } from '../links';
-import { useRecoilState, useRecoilValue } from 'recoil';
-import { experienceState, projectsState, techState, experienceLatexState, educationLatexState, projectsLatexState, techLatexState, keywordsAtom } from '../atom';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
+import { experienceState, projectsState, experienceLatexState, educationLatexState, projectsLatexState, techLatexState, keywordsAtom } from '../atom';
 import { latexTex } from '../config';
+
 const JobDescription = () => {
   const [expArray, setExpArray] = useRecoilState(experienceState);
   const [projectsArray, setProjectsArray] = useRecoilState(projectsState);
-  const techArray  = useRecoilValue(techState);
-  const [explatex, setExpLatex] = useRecoilState(experienceLatexState);
-  const [educationLatex, setEducationLatex] = useRecoilState(educationLatexState);
-  const [projectsLatex, setProjectsLatex] = useRecoilState(projectsLatexState);
-  const [techLatex, setTechLatex] = useRecoilState(techLatexState);
+  const explatex = useRecoilValue(experienceLatexState);
+  const educationLatex = useRecoilValue(educationLatexState);
+  const projectsLatex = useRecoilValue(projectsLatexState);
+  const techLatex = useRecoilValue(techLatexState);
   const [jobDescription, setJobDescription] = useState('');
   const [aiGeneratedDescription, setAiGeneratedDescription] = useState('');
   const [copyLatex, setCopyLatex] = useState("");
-  const [keywords, setKeywords] = useRecoilState(keywordsAtom);
+  const  setKeywords = useSetRecoilState(keywordsAtom);
   const [loadingKeywords, setLoadingKeywords] = useState(false);
   const [loadingAi, setLoadingAi] = useState(false);
 
-  const handleInputChange = (event) => {
+  const handleInputChange = (event: { target: { value: SetStateAction<string>; }; }) => {
     setJobDescription(event.target.value);
   };
 
@@ -29,27 +29,26 @@ const JobDescription = () => {
       const response = await axios.post(backendUrl, {
         description: jobDescription,
         resume: {
-          exp: expArray.map(exp => ({
+          // first filter out the points and the items based on selected or not
+         exp: expArray.filter(exp => exp.selected).map(exp => ({
             role: exp.role,
             company: exp.company,
             years: exp.years,
             loc: exp.loc,
-            points: exp.points
-          })),
-          projectsArray: projectsArray.map(proj => ({
-            name: proj.name,
-            tech: proj.tech,
-            years: proj.years,
-            points: proj.points
-          })),
-          techArray
+            points: exp.points.filter(point => point.selected)
+         })),
+         projectsArray: projectsArray.filter(proj => proj.selected).map(proj => ({
+          name: proj.name,
+          tech: proj.tech,
+          years: proj.years,
+          points: proj.points.filter(point => point.selected)
+         }))
+        
         }
       });
       setAiGeneratedDescription(response.data.generatedDescription);
-      // generatedDescription is the AI-generated description it has expArray ,educationArray, projectsArray, techArray
-      // fetch all arrays and set them in atom
       const res = response.data.generatedDescription;
-      const newExp = res.expArray.map((exp, index) => ({
+      const newExp = res.expArray.map((exp: { role: string; company: string; years: string; loc: string; points: string[]; }, index: number) => ({
         id: index + 1,
         role: exp.role,
         company: exp.company,
@@ -59,7 +58,7 @@ const JobDescription = () => {
         selected: true
       }))
       setExpArray(newExp);
-      const newProjects = res.projectsArray.map((proj, index) => ({
+      const newProjects = res.projectsArray.map((proj: { name: string; tech: string; years: string; points: string[]; }, index: number) => ({
         id: index + 1,
         name: proj.name,
         tech: proj.tech,
@@ -68,10 +67,8 @@ const JobDescription = () => {
         selected: true
       }))
       console.log(newProjects);
-      // setEducationArray(res.educationArray);
       setProjectsArray(newProjects);
       setLoadingAi(false);
-      // setTechArray(res.techArray);
     } catch (error) {
       console.error('Error fetching AI-generated description:', error);
     }
@@ -84,7 +81,6 @@ const JobDescription = () => {
        \\end{document}`;
       console.log(body);
       setCopyLatex(body);
-      // navigator.clipboard.writeText(body)
     } catch (error) {
       console.error('Error fetching AI-generated description:', error);
     }
@@ -112,15 +108,14 @@ const JobDescription = () => {
             value={jobDescription}
             onChange={handleInputChange}
             placeholder="Enter job description here"
-            rows="10"
-            cols="50"
+            rows={10}
+            cols={50}
             className='w-full text-xl font-bold p-2 m-2 bg-slate-300 rounded resize-none'
           />
 
           {aiGeneratedDescription && (
             <div className='mt-5'>
               <h2 className='text-2xl font-bold'>AI Generated Description</h2>
-              {/* <p>{aiGeneratedDescription}</p> */}
             </div>
           )}
         </div>
@@ -132,7 +127,7 @@ const JobDescription = () => {
             <button className='text-xl font-bold m-2 bg-blue-500 p-1 rounded w-2/3' onClick={handleGenKeywords}>{loadingKeywords ? "loading..." : "gen keywords"}</button>
 
           </div>
-          <div className='text-3xl font-bold text-center bg-green-500 p-2 rounded w-full' onClick={() => navigator.clipboard.writeText(copyLatex)}>copy</div>
+          <div className='cursor-pointer text-3xl font-bold text-center bg-green-500 p-2 rounded w-full' onClick={() => navigator.clipboard.writeText(copyLatex)}>copy</div>
         </div>
 
       </div>

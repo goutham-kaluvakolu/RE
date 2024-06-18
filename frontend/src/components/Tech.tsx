@@ -1,12 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import { techObject } from '../config'; // Importing the techObject from config file
 import { techLatexState } from '../atom';
-import { useRecoilState } from 'recoil';
+import { useSetRecoilState } from 'recoil';
 
-const preprocessTechObject = (techObject) => {
-    const processedObject = {};
-    Object.keys(techObject).forEach(category => {
-        processedObject[category] = techObject[category].map(tech => ({
+type TechObject = {
+    [category: string]: string[];
+};
+
+type TechCategory = {
+    name: string;
+    checked: boolean;
+};
+
+type ProcessedTechObject = {
+    [category: string]: TechCategory[];
+};
+
+const preprocessTechObject = (techObject: TechObject): ProcessedTechObject => {
+    const processedObject: ProcessedTechObject = {};
+    Object.keys(techObject).forEach((category) => {
+        processedObject[category] = techObject[category].map((tech) => ({
             name: tech.toString(), // Convert tech to string here
             checked: true
         }));
@@ -14,37 +27,35 @@ const preprocessTechObject = (techObject) => {
     return processedObject;
 };
 
-const TechConfigEditor = () => {
-    const [techLatex, setTechLatexAtom] = useRecoilState(techLatexState);
-    const [allTechnologies, setallTechnologies] = useState(techObject['all']);
-    const [technologies, setTechnologies] = useState(preprocessTechObject(techObject));
-    const [searchTerm, setSearchTerm] = useState('react');
-    // const [selectedCategory, setSelectedCategory] = useState('');
+const TechConfigEditor: React.FC = () => {
+    const setTechLatexAtom = useSetRecoilState(techLatexState);
+    const allTechnologies = techObject['all'] || [];
+    const [technologies, setTechnologies] = useState<ProcessedTechObject>(preprocessTechObject(techObject));
+    const [searchTerm, setSearchTerm] = useState('');
     const [dropdown, setDropdown] = useState(false);
-    const [selectedCategory, setSelectedCategory] = useState("languages");
+    const [selectedCategory, setSelectedCategory] = useState('languages');
 
     useEffect(() => {
         handleSubmit();
-    }, []);
+    }, []); // This effect runs only once, similar to componentDidMount
 
-    const handleCheckboxChange = (category, index) => {
+    const handleCheckboxChange = (category: string, index: number) => {
         const newTechnologies = { ...technologies };
         newTechnologies[category][index].checked = !newTechnologies[category][index].checked;
         setTechnologies(newTechnologies);
     };
 
-    const handleInputChange = (category, index, event) => {
+    const handleInputChange = (category: string, index: number, event: React.ChangeEvent<HTMLInputElement>) => {
         const newTechnologies = { ...technologies };
         newTechnologies[category][index].name = event.target.value;
         setTechnologies(newTechnologies);
     };
 
-    const handleSearchChange = (event) => {
+    const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchTerm(event.target.value);
-        console.log(event.target.value);
     };
 
-    const handleSelect = (techName) => {
+    const handleSelect = (techName: string) => {
         const newTechnologies = { ...technologies };
         if (selectedCategory) {
             newTechnologies[selectedCategory] = [
@@ -55,7 +66,7 @@ const TechConfigEditor = () => {
         }
     };
 
-    const handleCategorySelect = (category) => {
+    const handleCategorySelect = (category: string) => {
         setSelectedCategory(category);
         setDropdown(!dropdown);
     };
@@ -65,24 +76,19 @@ const TechConfigEditor = () => {
         \\section{Technical Skills}
         \\begin{itemize}[leftmargin=0.15in, label={}]
         \\small{
-        \\item{`
+        \\item{`;
 
-
-
-        //  \textbf{Languages}{: Java, Python, C/C++, SQL (Postgres), JavaScript, HTML5/SCSS , Vue.js} \\
-        const processedObject = {};
-        Object.keys(technologies).forEach(category => {
-            //i want to ignore the category all
-            if (category === 'all') {
-                return;
-            }
+        Object.keys(technologies).forEach((category) => {
+            if (category === 'all') return;
             finalLatex += `\n\\textbf{${category}}{: `;
-            technologies[category].filter(tech => tech.checked).map(tech => finalLatex += ` ${tech.name}, `);
+            technologies[category].filter((tech) => tech.checked).forEach((tech) => {
+                finalLatex += ` ${tech.name}, `;
+            });
             finalLatex += `} \\\\`;
         });
         finalLatex += ` }}
-        \\end{itemize}`
-        console.log(finalLatex);
+        \\end{itemize}`;
+        
         setTechLatexAtom(finalLatex);
     };
 
@@ -90,31 +96,25 @@ const TechConfigEditor = () => {
         <div className=''>
             <button className="m-5 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={handleSubmit}>Submit</button>
             <div className='flex bg-slate-300'>
-                {/* dropdown */}
+                {/* Dropdown */}
                 <div className='m-5'>
                     <button id="dropdownDefaultButton"
-                        onClick={() => setDropdown(!dropdown)} data-dropdown-toggle="dropdown" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center " type="button">{selectedCategory}<svg className="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4" />
+                        onClick={() => setDropdown(!dropdown)} data-dropdown-toggle="dropdown" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center " type="button">{selectedCategory}
+                        <svg className="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 4 4 4-4" />
                         </svg>
                     </button>
                     <div id="dropdown" className={`${dropdown ? 'block' : 'hidden'} z-10 bg-white divide-y divide-gray-100 rounded-lg`}>
                         <ul className="py-2 text-sm text-gray-700" aria-labelledby="dropdownDefaultButton">
-                            {
-
-                                // get the length of techObject
-                                Object.keys(techObject).map(category => {
-                                    return (
-                                        <li>
-                                            <div className="block px-4 py-2 hover:bg-gray-100" onClick={() => handleCategorySelect(category)}>{category}</div>
-                                        </li>
-                                    )
-                                }
-                                )
-                            }
+                            {Object.keys(techObject).map((category) => (
+                                <li key={category}>
+                                    <div className="block px-4 py-2 hover:bg-gray-100" onClick={() => handleCategorySelect(category)}>{category}</div>
+                                </li>
+                            ))}
                         </ul>
                     </div>
                 </div>
-                {/* search */}
+                {/* Search */}
                 <div className='m-5'>
                     <input
                         type="text"
@@ -136,9 +136,7 @@ const TechConfigEditor = () => {
                                 ))}
                     </ul>
                 </div>
-
             </div>
-
             <div className='flex bg-slate-300'>
                 {Object.keys(techObject).map((category) => (
                     <div key={category} className="">
@@ -161,18 +159,14 @@ const TechConfigEditor = () => {
                                         type="text"
                                         value={tech.name}
                                         onChange={(e) => handleInputChange(category, index, e)}
-                                        className=" focus:outline-none focus:ring-2 focus:ring-blue-500 flex-grow"
+                                        className="focus:outline-none focus:ring-2 focus:ring-blue-500 flex-grow"
                                     />
                                 </div>
                             ))}
                         </div>
-
                     </div>
                 ))}
             </div>
-
-
-
         </div>
     );
 };

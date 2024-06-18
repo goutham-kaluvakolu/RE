@@ -9,10 +9,10 @@ import { useRecoilValue } from 'recoil';
 import { keywordsAtom } from './atom';
 
 function App() {
-  const [eduVisible, setEduVisible] = useState(false);
-  const [expVisible, setExpVisible] = useState(false);
-  const [projVisible, setProjVisible] = useState(false);
-  const [techVisible, setTechVisible] = useState(false);
+  const [eduVisible, setEduVisible] = useState(true);
+  const [expVisible, setExpVisible] = useState(true);
+  const [projVisible, setProjVisible] = useState(true);
+  const [techVisible, setTechVisible] = useState(true);
   const keyword = useRecoilValue(keywordsAtom);
   return (
     <div>
