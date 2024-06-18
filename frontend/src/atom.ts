@@ -89,3 +89,9 @@ export const techLatexState = atom({
     key: 'techLatexState',
     default: "",
 });
+
+// Atom for tech data
+export const keywordsAtom = atom({
+    key: 'keywords',
+    default: [],
+});

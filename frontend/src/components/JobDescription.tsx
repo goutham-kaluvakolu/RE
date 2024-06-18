@@ -1,8 +1,8 @@
 import  { useState } from 'react';
 import axios from 'axios';
-import { backendUrl } from '../links';
+import { backendUrl, backendUrlGenKey } from '../links';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { experienceState, projectsState, techState, experienceLatexState, educationLatexState, projectsLatexState, techLatexState } from '../atom';
+import { experienceState, projectsState, techState, experienceLatexState, educationLatexState, projectsLatexState, techLatexState, keywordsAtom } from '../atom';
 import { latexTex } from '../config';
 const JobDescription = () => {
   const [expArray, setExpArray] = useRecoilState(experienceState);
@@ -15,12 +15,16 @@ const JobDescription = () => {
   const [jobDescription, setJobDescription] = useState('');
   const [aiGeneratedDescription, setAiGeneratedDescription] = useState('');
   const [copyLatex, setCopyLatex] = useState("");
+  const [keywords, setKeywords] = useRecoilState(keywordsAtom);
+  const [loadingKeywords, setLoadingKeywords] = useState(false);
+  const [loadingAi, setLoadingAi] = useState(false);
 
   const handleInputChange = (event) => {
     setJobDescription(event.target.value);
   };
 
   const handleAIClick = async () => {
+    setLoadingAi(true);
     try {
       const response = await axios.post(backendUrl, {
         description: jobDescription,
@@ -66,6 +70,7 @@ const JobDescription = () => {
       console.log(newProjects);
       // setEducationArray(res.educationArray);
       setProjectsArray(newProjects);
+      setLoadingAi(false);
       // setTechArray(res.techArray);
     } catch (error) {
       console.error('Error fetching AI-generated description:', error);
@@ -84,6 +89,20 @@ const JobDescription = () => {
       console.error('Error fetching AI-generated description:', error);
     }
   };
+
+  const handleGenKeywords = async () => {
+    setLoadingKeywords(true);
+    try {
+      const response = await axios.post(backendUrlGenKey, {
+        description: jobDescription
+      });
+      setKeywords(response.data.keywords);
+      setLoadingKeywords(false);
+    } catch (error) {
+      console.error('Error fetching AI-generated description:', error);
+    }
+  };
+
 
   return (
     <div className='flex justify-center items-center h-screen'>
@@ -108,8 +127,10 @@ const JobDescription = () => {
 
         <div className='flex flex-col mx-auto items-center justify-center bg-slate-300 w-full p-5'>
           <div className='flex w-full'>
-            <button className='text-xl font-bold m-2 bg-blue-500 p-1 rounded w-1/3' onClick={handleAIClick}>AI</button>
+            <button className='text-xl font-bold m-2 bg-blue-500 p-1 rounded w-1/3' onClick={handleAIClick}>{loadingAi ? "loading..." : "AI"}</button>
             <button className='text-xl font-bold m-2 bg-blue-500 p-1 rounded w-2/3' onClick={handleAIClickForLatex}>gen latex</button>
+            <button className='text-xl font-bold m-2 bg-blue-500 p-1 rounded w-2/3' onClick={handleGenKeywords}>{loadingKeywords ? "loading..." : "gen keywords"}</button>
+
           </div>
           <div className='text-3xl font-bold text-center bg-green-500 p-2 rounded w-full' onClick={() => navigator.clipboard.writeText(copyLatex)}>copy</div>
         </div>

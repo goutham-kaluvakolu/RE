@@ -3,12 +3,12 @@
 // config.js
 export const eduArray = [
     {
-        uni:"Bachelor of Technology",
-        degree:"Computer Science and Engineering",
-        year:"2018 - 2022",
+        uni:"University of Texas at Arlington",
+        degree:"Masters of Science in Computer Science",
+        year:"2022 - 2024",
         points:[
-            "CGPA: 8.5/10"],
-        city:"Vellore Institute of Technology, Vellore, India"}
+            "GPA: 4/4"],
+        city:"Arlington, TX",}
   
 ]
 export const expArray = [
@@ -70,6 +70,25 @@ export const projectsArray = [
             "Leveraged TensorFlow and five other associated libraries to streamline the colorization process."
         ]
     },
+    ,
+    {
+        name:"Fault Tolerant System 2PC",
+        tech: ["gRPC", "Distributed Systems", "Multi threading"],
+        years:"June 2023 - July 2023",
+        points:[
+            "Implemented the Two-Phase Commit (2PC) protocol to manage distributed transactions across multiple servers, ensuring transactional consistency through a coordinated prepare and commit phase.",
+            "Designed and implemented a distributed system resilient to various failure scenarios, including node failures and network partitions. Utilized data replication, leader election with the Raft consensus algorithm, and robust recovery mechanisms like logging and checkpointing to maintain data consistency and availability.",
+        ]
+    },
+    {
+        name:"Dropbox",
+        tech: ["gRPC", "Distributed Systems", "Multi threading"],
+        years:"May 2023 - June 2023",
+        points:[
+            "Developed a multi-threaded file synchronization system using gRPC, similar to Dropbox, ensuring efficient and reliable data transfer between clients and servers..",
+            "Enhanced synchronization and user experience by implementing heartbeat-based helper threads that periodically check the states of clients and servers, ensuring continuous and automatic syncing without manual intervention.",
+        ]
+    },
     {
         name:"UTA market place",
         tech: ["DBMS","SQL"],
@@ -78,7 +97,7 @@ export const projectsArray = [
             "Collaborated with a team of 4 to create a student-focused online marketplace, emphasizing user experience and security.",
             "Executed multiple phases of product development, encompassing business requirement gathering, ER diagram creation, and database schema development."
         ]
-    },
+    }
     ];
 
 // config.js
