@@ -18,6 +18,7 @@ const JobDescription = () => {
   const  setKeywords = useSetRecoilState(keywordsAtom);
   const [loadingKeywords, setLoadingKeywords] = useState(false);
   const [loadingAi, setLoadingAi] = useState(false);
+  const [copyState, setCopyState] = useState("copy");
 
   const handleInputChange = (event: { target: { value: SetStateAction<string>; }; }) => {
     setJobDescription(event.target.value);
@@ -99,6 +100,15 @@ const JobDescription = () => {
     }
   };
 
+  const handleCopyLatex = () => {
+    navigator.clipboard.writeText(copyLatex);
+    // alert("Latex copied to clipboard");
+    setCopyState("copied");
+    setTimeout(() => {
+      setCopyState("copy");
+    }, 2000);
+  };
+
 
   return (
     <div className='flex justify-center items-center h-screen'>
@@ -122,12 +132,12 @@ const JobDescription = () => {
 
         <div className='flex flex-col mx-auto items-center justify-center bg-slate-300 w-full p-5'>
           <div className='flex w-full'>
-            <button className='text-xl font-bold m-2 bg-blue-500 p-1 rounded w-1/3' onClick={handleAIClick}>{loadingAi ? "loading..." : "AI"}</button>
-            <button className='text-xl font-bold m-2 bg-blue-500 p-1 rounded w-2/3' onClick={handleAIClickForLatex}>gen latex</button>
+            <button className='text-xl font-bold m-2 bg-blue-500 p-1 rounded w-1/3 hover:bg-blue-400' onClick={handleAIClick}>{loadingAi ? "loading..." : "AI"}</button>
+            <button className='text-xl font-bold m-2 bg-blue-500 p-1 rounded w-2/3 hover:bg-blue-400' onClick={handleAIClickForLatex}>gen latex</button>
             <button className='text-xl font-bold m-2 bg-blue-500 p-1 rounded w-2/3' onClick={handleGenKeywords}>{loadingKeywords ? "loading..." : "gen keywords"}</button>
 
           </div>
-          <div className='cursor-pointer text-3xl font-bold text-center bg-green-500 p-2 rounded w-full' onClick={() => navigator.clipboard.writeText(copyLatex)}>copy</div>
+          <div className='cursor-pointer text-3xl font-bold text-center bg-green-500 p-2 rounded w-full hover:bg-green-400' onClick={handleCopyLatex}>{copyState}</div>
         </div>
 
       </div>

@@ -92,7 +92,7 @@ const Exp = () => {
 
     return (
         <div>
-            <button className="m-5 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={handleSubmit}>Submit</button>
+            <button className="m-5 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 hover:shadow-lg rounded" onClick={handleSubmit}>Submit</button>
 
             {
                 experience.map((item, index) => (

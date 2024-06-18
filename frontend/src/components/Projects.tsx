@@ -93,7 +93,7 @@ const Projects = () => {
 
     return (
         <div >
-            <button className="m-5 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700" type="submit" onClick={handleSubmit} >
+            <button className="m-5 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 hover:shadow-lg rounded" type="submit" onClick={handleSubmit} >
                 Submit
             </button>
             <div>
